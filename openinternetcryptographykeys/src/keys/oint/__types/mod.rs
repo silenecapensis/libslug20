@@ -28,6 +28,7 @@
 //! ```
 
 use libslug::errors::SlugErrors;
+use libslug::slugcrypt::internals::encryption::ecies::{ECIESEncrypt, ECPublicKey, ECSecretKey};
 use serde::{Serialize, Deserialize};
 use zeroize::{Zeroize,ZeroizeOnDrop};
 
@@ -178,6 +179,14 @@ pub enum Slug20Signature {
     Schnorr(SchnorrSignature),
     SPHINCSPlus(Box<SPHINCSSignature>),
     BLS(BLSSignature),
+}
+
+pub enum Slug20EncryptionPublicKey {
+    ECIES_ED25519(ECPublicKey),
+}
+
+pub enum Slug20EncryptionSecretKey {
+    ECIES_ED25519(ECSecretKey),
 }
 
 /// # Key Type

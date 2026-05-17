@@ -48,6 +48,8 @@
 use fixedstr::str192;
 use libslug::errors::SlugErrors;
 use libslug::prelude::SlugSphincsPlus;
+use libslug::slugcrypt::internals::ciphertext::CipherText;
+use libslug::slugcrypt::internals::encryption::ecies::ECIESEncrypt;
 use libslug::slugcrypt::internals::signature::bls;
 use libslug::slugcrypt::traits::IntoStandardPem;
 use serde::{Deserialize, Serialize};
@@ -61,7 +63,7 @@ use crate::prelude::essentials::{OpenInternetFromStandardPEM,OpenInternetIntoSta
 use libslug::slugcrypt::traits::{IntoBincode,FromBincode};
 use libslug::slugcrypt::traits::FromStandardPem;
 use crate::keys::oint::required_traits::{OpenInternetAPIGeneration, OpenInternetFromPemAny};
-use crate::keys::oint::__types::{FromPemAny, Slug20KeyType};
+use crate::keys::oint::__types::{FromPemAny, Slug20EncryptionPublicKey, Slug20EncryptionSecretKey, Slug20KeyType};
 use crate::keys::oint::__types::PemEncodingSuites;
 
 
@@ -1040,6 +1042,43 @@ impl OpenInternetAPIGeneration for OpenInternetCryptographyAPI {
                 let sk_output: OpenInternetCryptographySecretKey = OpenInternetCryptographySecretKey::from_slug20_secret_key(Slug20SecretKey::SPHINCSPlus(sk));
 
                 Ok(OpenInternetCryptographyKeypair { public_key: pk_output, secret_key: sk_output })
+            }
+        }
+    }
+}
+
+
+/// # OpenInternetCryptographyEncryptionKey
+/// 
+/// This struct is a container for a public and secret key.
+pub struct OpenInternetCryptographyEncryptionKey {
+    pub public_key: Slug20EncryptionPublicKey,
+    pub secret_key: Option<Slug20EncryptionSecretKey>,
+}
+
+pub struct OpenInternetCryptographyEncryptionCipherText {
+    pub ciphertext: Vec<u8>,
+}
+
+impl OpenInternetCryptographyEncryptionKey {
+    pub fn from_pk(pk: Slug20EncryptionPublicKey) -> Self {
+        OpenInternetCryptographyEncryptionKey { public_key: pk, secret_key: None }
+    }
+    pub fn from_keys(pk: Slug20EncryptionPublicKey, sk: Slug20EncryptionSecretKey) -> Self {
+        OpenInternetCryptographyEncryptionKey { public_key: pk, secret_key: Some(sk) }
+    }
+    pub fn encrypt<T: AsRef<[u8]>>(msg: T, pk: OpenInternetCryptographyEncryptionKey) -> Result<CipherText,SlugErrors> {
+        match pk.public_key {
+            Slug20EncryptionPublicKey::ECIES_ED25519(x) => {
+                let output = ECIESEncrypt::encrypt(&x, msg.as_ref());
+
+                if output.is_err() {
+                    return Err(SlugErrors::Other(String::from("Error in Encryption")))
+                }
+                else {
+                    return Ok(output.unwrap())
+                }
+                    
             }
         }
     }

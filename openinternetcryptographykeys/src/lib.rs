@@ -91,6 +91,22 @@
 //! - [ ] DER
 //! - [ ] JWK
 //! - [ ] X59
+//! 
+//! ## TODO:
+//! 
+//! - [ ] Add Support For More Algorithms
+//! - [ ] Add Support For More Encodings
+//! - [ ] Add Support For Key Encryption
+//! - [ ] Add Support For Key Wrapping
+//! - [ ] Add Support For Key Agreement
+//! - [ ] Add Support For Key Exchange
+//! - [ ] Add Support For BIP39 Mnemonics
+//! - [ ] Add Support For Key Backup and Recovery
+//! - [ ] Add Support For Hardware Wallets
+//! - [ ] Add Support For More Standardized Hybrids
+//! - [ ] Add Support For More Standardized Key Derivation
+//! - [ ] Add Support For More Standardized Key Signatures
+//! - [ ] Add Support For More Standardized Key Encryption
 
 /// Open Internet Cryptography Keys (OICK) is a Rust library for handling cryptographic keys in a standardized way, following the Open Internet Cryptography Key (OICK) specification. It provides functionality for creating, parsing, and managing cryptographic keys, as well as support for various key types and formats.
 pub mod prelude;

@@ -6,3 +6,5 @@ fn main() {
     let msg = "Hello World";
     let sig = keypair.unwrap().sign(msg).unwrap();
 }
+
+pub mod serde;

@@ -20,9 +20,12 @@ OpenInternetCryptographyKeys is a crate/library for easy, modern cryptography an
 
 ## Algorithms
 
-- [X] ShulginSigning
-- [X] AbsolveSigning
-- [X] EsphandSigning
+- [X] ShulginSigning (SPHINCS+_SHAKE256 & ED25519)
+- [X] AbsolveSigning (ML-DSA3 & ED25519)
+- [X] EsphandSigning (FALCON1024 & ED25519)
+- [ ] ShulginSigningWithEd448
+- [ ] AbsolveSigningWithEd448
+- [ ] EsphandSigningWithEd448
 - [X] ED25519
 - [X] ED448
 - [X] ECDSA (SECP256k1)
@@ -37,3 +40,9 @@ OpenInternetCryptographyKeys is a crate/library for easy, modern cryptography an
 
 - [ ] ECIES-ED25519-SILENE (SHA3)
 - [ ] RSA
+- [ ] Kyber768
+
+## Serialization
+
+- [X] Standard PEM
+- [ ] X59-fmt

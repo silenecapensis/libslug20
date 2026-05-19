@@ -42,6 +42,11 @@ OpenInternetCryptographyKeys is a crate/library for easy, modern cryptography an
 - [ ] RSA
 - [ ] Kyber768
 
+## Symmetric Encryption
+
+- [X] AES256-GCM with BIP39
+- [X] XCHACHA20-POLY1305 with BIP39
+
 ## Serialization
 
 - [X] Standard PEM

@@ -8,3 +8,7 @@ pub mod essentials {
     pub use crate::keys::oint::__types::FromPemAny;
     pub use crate::keys::oint::__types::PemEncodingSuites; 
 }
+
+pub mod encryption {
+    pub use crate::keys::encrypt::OpenInternetSymmetricEncryptionBIP39;
+}

@@ -598,14 +598,3 @@ impl FromStandardPem for MLDSA3Signature {
         return Ok(sig)
     }
 }
-
-#[test]
-fn gen() {
-    let keypair = SlugMLDSA3::generate();
-    let signature = keypair.sign("Hello, ML_DSA3!", "Context").unwrap();
-    let is_valid = keypair.verify("Hello, ML_DSA3!", "Context", &signature);
-
-    println!("Is_Valid: {}", is_valid.unwrap());
-
-
-}

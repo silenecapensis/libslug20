@@ -547,7 +547,7 @@ impl ShulginSignatureSigningInfo {
     }
     fn generate_oscsprng() -> str128 {
         let encoder = SlugEncodingUsage::new(SlugEncodings::Base32unpadded);
-        let os_randomness = FuschineCSPRNG::new_32();
+        let os_randomness = FuschineCSPRNG::get_32_bytes_from_os();
         let output = encoder.encode(os_randomness).expect("Failed to encode randomness");
         let output_csprng = fixedstr::str128::from_str(&output).unwrap();
         return output_csprng

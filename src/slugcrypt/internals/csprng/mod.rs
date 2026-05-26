@@ -27,7 +27,7 @@ impl SlugCSPRNG {
     }
     /// Generate Randomness From Operating System
     pub fn os_rand() -> [u8;32] {
-        return FuschineCSPRNG::new_32();
+        return FuschineCSPRNG::get_32_bytes_from_os();
     }
     /// Generates Randomness From Operating System (64 bytes)
     pub fn os_rand_64() -> [u8;64] {

@@ -100,6 +100,9 @@ pub mod shulginsigning;
 /// EsphandSigning (FALCON1024 & ED25519)
 pub mod esphand_signature;
 
+/// PQ Signatures
+pub mod standardized;
+
 /// AbsolveSigning
 pub mod absolvesigning;
 

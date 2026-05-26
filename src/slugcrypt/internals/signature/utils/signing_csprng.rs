@@ -25,7 +25,7 @@ pub struct HedgedSignatureData {
 impl HedgedSignatureData {
     pub fn new<T: AsRef<str>>(s: T) -> Self {
         // Generate Cryptographic Randomness
-        let x = FuschineCSPRNG::new_32();
+        let x = FuschineCSPRNG::get_32_bytes_from_os();
 
         let output = x.to_hex().unwrap();
 

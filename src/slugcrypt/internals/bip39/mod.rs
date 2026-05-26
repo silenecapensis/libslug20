@@ -17,6 +17,8 @@
 
 use bip39::{Mnemonic, MnemonicType, Language, Seed,ErrorKind};
 use serde::{Serialize,Deserialize};
+use rand_core::CryptoRng;
+use rand_core::TryRng;
 
 use zeroize::{Zeroize,ZeroizeOnDrop};
 

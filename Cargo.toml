@@ -95,6 +95,8 @@ hybrid-array = "0.2.3"
 
 hybrid-array-new = {package="hybrid-array", version="0.3.1"}
 
+hybird-array-four = {package="hybrid-array", version="0.4.12"}
+
 dirs = {version = "6.0.0", optional=true}
 
 slugencode = "0.1.0"

@@ -76,6 +76,8 @@ pub enum SlugErrors {
     },
     #[error("[Error] Invalid PEM Label")]
     InvalidPemLabel,
+    #[error("[Error] Unknown Error")]
+    Unknown,
 }
 
 #[derive(Debug, Error)]

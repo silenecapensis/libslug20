@@ -2532,6 +2532,7 @@ version = "0.4.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9155a582abd142abc056962c29e3ce5ff2ad5469f4246b537ed42c5deba857da"
 dependencies = [
+ "ctutils",
  "typenum",
 ]
 
@@ -3090,7 +3091,7 @@ dependencies = [
  "k256",
  "leslie_lamport",
  "log",
- "ml-dsa",
+ "ml-dsa 0.0.4",
  "ml-kem",
  "pem",
  "pqcrypto-falcon",
@@ -3146,7 +3147,8 @@ dependencies = [
  "k256",
  "leslie_lamport",
  "log",
- "ml-dsa",
+ "ml-dsa 0.0.4",
+ "ml-dsa 0.1.0-rc.11",
  "ml-kem",
  "morus",
  "pem",
@@ -3210,7 +3212,7 @@ dependencies = [
  "k256",
  "leslie_lamport",
  "log",
- "ml-dsa",
+ "ml-dsa 0.0.4",
  "ml-kem",
  "pem",
  "pqcrypto-falcon",
@@ -3392,6 +3394,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "ml-dsa"
+version = "0.1.0-rc.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "163f15320f3fba11760c373af52d7f69d638482c2c350d877fb06513b1c3137c"
+dependencies = [
+ "const-oid 0.10.2",
+ "crypto-common 0.2.1",
+ "ctutils",
+ "hybrid-array 0.4.12",
+ "module-lattice",
+ "pkcs8 0.11.0",
+ "sha3 0.11.0",
+ "signature 3.0.0",
+]
+
+[[package]]
 name = "ml-kem"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3401,6 +3419,17 @@ dependencies = [
  "kem",
  "rand_core 0.6.4",
  "sha3 0.10.8",
+]
+
+[[package]]
+name = "module-lattice"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0c61b87c9683ab7cb1c6871d261ad5479b6b10ceb52c4352aaca3b5d35a8febe"
+dependencies = [
+ "ctutils",
+ "hybrid-array 0.4.12",
+ "num-traits",
 ]
 
 [[package]]
@@ -5372,6 +5401,7 @@ version = "3.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "28d567dcbaf0049cb8ac2608a76cd95ff9e4412e1899d389ee400918ca7537f5"
 dependencies = [
+ "digest 0.11.3",
  "rand_core 0.10.1",
 ]
 
@@ -6008,7 +6038,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.3.3",
+ "getrandom 0.4.2",
  "once_cell",
  "rustix",
  "windows-sys 0.61.2",

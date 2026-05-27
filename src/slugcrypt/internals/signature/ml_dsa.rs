@@ -50,6 +50,7 @@ use hybrid_array_new::ArrayN;
 use rand::RngCore;
 use rand::CryptoRng;
 use crate::slugcrypt::traits::{FromBincode,IntoBincode};
+use securerand_rs::bip39::*;
 
 
 pub const MLDSA3_PUBLIC_KEY_SIZE: usize = 1952;
@@ -338,6 +339,26 @@ impl SlugMLDSA3 {
             public_key,
             secret_key,
         }
+    }
+    pub fn generate_with_bip39_advanced(mnemonic: SlugMnemonic, password: &str) -> MLDSA3Keypair {
+        let mut rng: MnemnonicSeed = mnemonic.to_seed_with_crypto(password).unwrap();
+        let kp: ml_dsa::KeyPair<ml_dsa::MlDsa65> = ml_dsa::MlDsa65::key_gen(&mut rng);
+
+    }
+}
+
+impl rand::RngCore for MnemnonicSeed {
+    fn next_u32(&mut self) -> u32 {
+        todo!()
+    }
+    fn next_u64(&mut self) -> u64 {
+        todo!()
+    }
+    fn fill_bytes(&mut self, dest: &mut [u8]) {
+        todo!()
+    }
+    fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), rand::Error> {
+        todo!()
     }
 }
 

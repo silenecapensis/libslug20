@@ -82,6 +82,7 @@ ed448 = {version = "0.5.0", optional=true}
 ed448-goldilocks = {version="0.9.0", optional=true}
 ed448-goldilocks-plus = {version = "0.16.0", optional=true}
 bls-signatures = {version = "0.15.0", optional=true}
+ml-dsa-new = {package="ml-dsa", version = "=0.1.0-rc.11", optional=true}
 
 
 # /atropinetears/One-Time Signatures
@@ -153,6 +154,7 @@ ed448 = ["dep:ed448","dep:ed448-goldilocks-plus","dep:ed448-goldilocks"]
 bls = ["dep:bls-signatures"]
 rsa = ["dep:rsa"]
 slh-dsa = ["dep:slh-dsa"]
+ml-dsa-new = ["dep:ml-dsa-new"]
 
 
 # Other
@@ -163,7 +165,7 @@ csprng = ["dep:rand","dep:securerand-rs","dep:argon2"]
 
 # Containers
 full-digests = ["sha3","sha2","blake2","blake3","digest"]
-full-signatures = ["schnorr","ed25519","ecdsa","sphincs_plus","falcon","ml-dsa","ed448","bls","rsa"]
+full-signatures = ["schnorr","ed25519","ecdsa","sphincs_plus","falcon","ml-dsa","ed448","bls","rsa","ml-dsa-new"]
 full-encryption = ["rsa","ecies-ed25519-sha3","kyber1024"]
 full-steady-signatures = ["slh-dsa"]
 

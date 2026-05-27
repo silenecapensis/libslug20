@@ -106,16 +106,16 @@ impl SLHDSA5SecretKey {
     pub fn from_bip39(mnemonic: SlugMnemonic, password: &str) -> SLHDSA5SecretKey {
         Self::generate_with_bip39_advanced(mnemonic, password)
     }
-    pub fn into_usable_type(&self) -> Result<slh_dsa::SigningKey<Shake256s>,SlugErrors> {
+    pub fn into_usable_type(&self) -> Result<(),SlugErrors> {
         let bytes = Array::try_from(self.sk);
 
         if bytes.is_err() {
             return Err(SlugErrors::Unknown)
         }
-        else {
-            let sk = slh_dsa::SigningKey::<Shake256s>
-            return Ok(sk)
-        }
+        //let bytes = bytes.unwrap();
+        //let signing_key = slh_dsa::SigningKey::<Shake256s>::from_bytes(&bytes).unwrap();
+        //return Ok(signing_key)
+        Ok(())
     }
     pub fn public_key(&self) -> SLHDSA5PublicKey {
         let sk = self.into_usable_type().unwrap();

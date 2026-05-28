@@ -123,7 +123,7 @@ impl MLDSA87SecretSeed {
         let signature: &Result<Signature<MlDsa87>, _> = &self.into_secret_key_usable_type().try_sign(message.as_ref());
 
         if signature.is_ok() {
-            let x: Signature<MlDsa87> = signature.unwrap().clone();
+            let x: Signature<MlDsa87> = signature.clone().unwrap();
             let bytes = x.to_bytes();
             return Ok(MLDSA87Signature::from_bytes(&bytes).unwrap())
         }
@@ -169,6 +169,18 @@ impl MLDSA87PublicKey {
             return Ok(usable.unwrap())
         }
     }
+    pub fn verify<T:AsRef<[u8]>>(&self, message: T, signature: &MLDSA87Signature) -> Result<bool,SlugErrors> {
+        let vk: VerifyingKey<MlDsa87> = self.into_verifying_key_usable_type()?;
+        let sig = signature.to_usable_type();
+        let output = vk.verify(message.as_ref(), &sig);
+
+        if output.is_ok() {
+            return Ok(true)
+        }
+        else {
+            return Ok(false)
+        }
+    }
 }
 
 impl MLDSA87Signature {
@@ -182,6 +194,27 @@ impl MLDSA87Signature {
     }
     pub fn from_array(sig: [u8; 4627]) -> MLDSA87Signature {
         return MLDSA87Signature { sig: sig }
+    }
+    pub fn verify(&self, message: &[u8], pk: &MLDSA87PublicKey) -> Result<bool,SlugErrors> {
+        let key = pk.into_verifying_key_usable_type()?;
+        let output: Result<(), _> = key.verify(message, &self.to_usable_type());
+        if output.is_ok() {
+            return Ok(true)
+        }
+        else {
+            return Ok(false)
+        }
+    }
+    
+    fn to_usable_type(&self) -> Result<Signature<MlDsa87>,SlugErrors> {
+        let x = Signature::decode(self.sig.as_ref());
+
+        if x.is_ok() {
+            return Ok(x.unwrap())
+        }
+        else {
+            return Err(SlugErrors::Unknown)
+        }
     }
 }
 pub struct GenerateMLDSA87;

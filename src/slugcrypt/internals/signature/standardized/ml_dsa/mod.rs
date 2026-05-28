@@ -8,7 +8,7 @@ use ml_dsa_new::MlDsaParams;
 use ml_dsa_new::SignatureEncoding;
 use ml_dsa_new::Signer;
 use ml_dsa_new::Verifier;
-use ml_dsa_new::{SigningKey,VerifyingKey};
+use ml_dsa_new::{SigningKey,VerifyingKey,Signature};
 use securerand_rs::bip39::SlugMnemonic;
 
 pub struct SlugMLDSA65;
@@ -44,3 +44,6 @@ impl SlugMLDSA65 {
         MLDSA65Seed { seed: seed }
     }
 }
+
+pub mod ml_dsa87;
+pub mod ml_dsa65;

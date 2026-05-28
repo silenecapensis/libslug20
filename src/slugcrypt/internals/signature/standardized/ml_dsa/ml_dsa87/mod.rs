@@ -228,4 +228,19 @@ impl GenerateMLDSA87 {
     pub fn generate_from_rng<R: CryptoRng + ?Sized>(mut rng: &mut R) {
         let key = SigningKey::<MlDsa87>::generate_from_rng(&mut rng);
     }
+    pub fn generate_using_bip39(mnemonic: SlugMnemonic, password: &str) -> Result<MLDSA87SecretSeed,SlugErrors> {
+        let x = mnemonic.to_seed_with_crypto(password);
+
+        if x.is_ok() {
+            let mut seed = x.unwrap();
+            let key = SigningKey::<MlDsa87>::generate_from_rng(&mut seed);
+            let seed = key.to_seed();
+            let seed_slice = seed.as_slice();
+            let output_seed = MLDSA87SecretSeed::from_bytes(seed_slice)?;
+            Ok(output_seed)
+        }
+        else {
+            Err(SlugErrors::Unknown)
+        }
+    }
 }

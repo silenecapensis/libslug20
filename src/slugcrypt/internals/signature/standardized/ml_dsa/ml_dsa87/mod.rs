@@ -30,6 +30,8 @@ use ml_dsa_new::Signer;
 use ml_dsa_new::Verifier;
 use ml_dsa_new::{SigningKey,VerifyingKey,Signature};
 use rand_2::CryptoRng;
+use securerand_rs::bip39::SlugBIP39Languages;
+use securerand_rs::bip39::SlugBIP39Words;
 use securerand_rs::bip39::SlugMnemonic;
 use serde::{Serialize,Deserialize};
 use serde_big_array::BigArray;
@@ -171,8 +173,8 @@ impl MLDSA87PublicKey {
     }
     pub fn verify<T:AsRef<[u8]>>(&self, message: T, signature: &MLDSA87Signature) -> Result<bool,SlugErrors> {
         let vk: VerifyingKey<MlDsa87> = self.into_verifying_key_usable_type()?;
-        let sig = signature.to_usable_type();
-        let output = vk.verify(message.as_ref(), &sig);
+        let sig: Signature<MlDsa87> = signature.to_usable_type()?;
+        let output: Result<(), _> = vk.verify(message.as_ref(), &sig);
 
         if output.is_ok() {
             return Ok(true)
@@ -242,5 +244,13 @@ impl GenerateMLDSA87 {
         else {
             Err(SlugErrors::Unknown)
         }
+    }
+    pub fn generate_with_bip39(number_of_words: SlugBIP39Words, language: SlugBIP39Languages, pass: &str) -> Result<(SlugMnemonic, MLDSA87SecretSeed),SlugErrors> {
+        let x: SlugMnemonic = SlugMnemonic::new(number_of_words, language);
+        let seed: MLDSA87SecretSeed = GenerateMLDSA87::generate_using_bip39(x, pass)?;
+        Ok((x, seed))
+    }
+    pub fn generate_with_bip39_no_password(number_of_words: SlugBIP39Words, language: SlugBIP39Languages) -> Result<(SlugMnemonic, MLDSA87SecretSeed),SlugErrors> {
+        return Self::generate_with_bip39(number_of_words, language, "");
     }
 }

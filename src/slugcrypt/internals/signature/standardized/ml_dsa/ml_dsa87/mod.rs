@@ -122,10 +122,10 @@ impl MLDSA87SecretSeed {
         return MLDSA87PublicKey::from_bytes(&pk_array).unwrap()
     }
     pub fn sign<T: AsRef<[u8]>>(&self, message: T) -> Result<MLDSA87Signature,SlugErrors> {
-        let signature: &Result<Signature<MlDsa87>, _> = &self.into_secret_key_usable_type().try_sign(message.as_ref());
+        let signature = self.into_secret_key_usable_type().try_sign(message.as_ref());
 
         if signature.is_ok() {
-            let x: Signature<MlDsa87> = signature.clone().unwrap();
+            let x = &signature.unwrap();
             let bytes = x.to_bytes();
             return Ok(MLDSA87Signature::from_bytes(&bytes).unwrap())
         }
@@ -199,7 +199,7 @@ impl MLDSA87Signature {
     }
     pub fn verify(&self, message: &[u8], pk: &MLDSA87PublicKey) -> Result<bool,SlugErrors> {
         let key = pk.into_verifying_key_usable_type()?;
-        let output: Result<(), _> = key.verify(message, &self.to_usable_type());
+        let output = key.verify(message, &self.to_usable_type()?);
         if output.is_ok() {
             return Ok(true)
         }
@@ -248,7 +248,7 @@ impl GenerateMLDSA87 {
     pub fn generate_with_bip39(number_of_words: SlugBIP39Words, language: SlugBIP39Languages, pass: &str) -> Result<(SlugMnemonic, MLDSA87SecretSeed),SlugErrors> {
         let x: SlugMnemonic = SlugMnemonic::new(number_of_words, language);
         let seed: MLDSA87SecretSeed = GenerateMLDSA87::generate_using_bip39(x, pass)?;
-        Ok((x, seed))
+        Ok((x.clone(), seed))
     }
     pub fn generate_with_bip39_no_password(number_of_words: SlugBIP39Words, language: SlugBIP39Languages) -> Result<(SlugMnemonic, MLDSA87SecretSeed),SlugErrors> {
         return Self::generate_with_bip39(number_of_words, language, "");

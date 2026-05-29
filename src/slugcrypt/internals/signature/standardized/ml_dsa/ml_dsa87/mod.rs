@@ -249,7 +249,7 @@ impl GenerateMLDSA87 {
     }
     pub fn generate_with_bip39(number_of_words: SlugBIP39Words, language: SlugBIP39Languages, pass: &str) -> Result<(SlugMnemonic, MLDSA87SecretSeed),SlugErrors> {
         let x: SlugMnemonic = SlugMnemonic::new(number_of_words, language);
-        let seed: MLDSA87SecretSeed = GenerateMLDSA87::generate_using_bip39(x, pass)?;
+        let seed: MLDSA87SecretSeed = GenerateMLDSA87::generate_using_bip39(x.clone(), pass)?;
         Ok((x.clone(), seed))
     }
     pub fn generate_with_bip39_no_password(number_of_words: SlugBIP39Words, language: SlugBIP39Languages) -> Result<(SlugMnemonic, MLDSA87SecretSeed),SlugErrors> {

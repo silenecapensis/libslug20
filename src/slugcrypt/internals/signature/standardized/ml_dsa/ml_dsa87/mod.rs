@@ -37,6 +37,7 @@ use serde::{Serialize,Deserialize};
 use serde_big_array::BigArray;
 use zeroize::{Zeroize,ZeroizeOnDrop};
 use crate::errors::SlugErrors;
+use hybird_array_four::{Array,ArrayN,ArraySize};
 
 /// # MLDSA-87 Secret Key Seed
 /// 
@@ -207,12 +208,13 @@ impl MLDSA87Signature {
             return Ok(false)
         }
     }
-    
-    fn to_usable_type(&self) -> Result<Signature<MlDsa87>,SlugErrors> {
-        let x = Signature::decode(self.sig.as_ref());
+    pub fn to_usable_type(&self) -> Result<Signature<MlDsa87>,SlugErrors> {
+        let output = *Array::from_slice(&self.sig);
+        
+        let sig = Signature::decode(output.as_ref());
 
-        if x.is_ok() {
-            return Ok(x.unwrap())
+        if sig.is_some() {
+            return Ok(sig.unwrap())
         }
         else {
             return Err(SlugErrors::Unknown)

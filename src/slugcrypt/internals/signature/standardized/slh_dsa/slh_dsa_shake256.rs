@@ -45,6 +45,7 @@ pub mod info {
     pub const PROTOCOL_NAME: &str = "libslug20/slh_dsa_shake256_level_5";
     pub const PUBLIC_KEY_SIZE: usize = 64;
     pub const SECRET_KEY_SIZE: usize = 128;
+    pub const SIGNATURE_SIZE: usize = 29_792;
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Zeroize, ZeroizeOnDrop, PartialEq, PartialOrd, Hash)]

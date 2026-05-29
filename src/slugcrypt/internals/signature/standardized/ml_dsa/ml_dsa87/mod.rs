@@ -39,6 +39,8 @@ use zeroize::{Zeroize,ZeroizeOnDrop};
 use crate::errors::SlugErrors;
 use hybird_array_four::{Array,ArrayN,ArraySize};
 
+pub const DEFAULT_CONTEXT: &str = "OpenInternetCryptographyProject";
+
 /// # MLDSA-87 Secret Key Seed
 /// 
 /// This is used to derive the secret key and public key using the seed. This is equivalent to the secret key as it is just a seed to be derived from.
@@ -226,14 +228,14 @@ pub struct GenerateMLDSA87;
 impl GenerateMLDSA87 {
     /// Generate a new ML-DSA87 key using randomness
     pub fn generate() {
-        let key = SigningKey::<MlDsa87>::generate();
+        let key: SigningKey<MlDsa87> = SigningKey::<MlDsa87>::generate();
     }
     /// Generate a new ML-DSA87 key using the cryptorng trait.
     pub fn generate_from_rng<R: CryptoRng + ?Sized>(mut rng: &mut R) {
-        let key = SigningKey::<MlDsa87>::generate_from_rng(&mut rng);
+        let key: SigningKey<MlDsa87> = SigningKey::<MlDsa87>::generate_from_rng(&mut rng);
     }
     pub fn generate_using_bip39(mnemonic: SlugMnemonic, password: &str) -> Result<MLDSA87SecretSeed,SlugErrors> {
-        let x = mnemonic.to_seed_with_crypto(password);
+        let x: Result<securerand_rs::bip39::MnemnonicSeed, bip39::ErrorKind> = mnemonic.to_seed_with_crypto(password);
 
         if x.is_ok() {
             let mut seed = x.unwrap();
@@ -254,5 +256,11 @@ impl GenerateMLDSA87 {
     }
     pub fn generate_with_bip39_no_password(number_of_words: SlugBIP39Words, language: SlugBIP39Languages) -> Result<(SlugMnemonic, MLDSA87SecretSeed),SlugErrors> {
         return Self::generate_with_bip39(number_of_words, language, "");
+    }
+    /// # Generate With BIP39 (Default Password)
+    /// 
+    /// Password: "OpenInternetCryptographyProject"
+    pub fn generate_with_bip39_with_default_slug_password(number_of_words: SlugBIP39Words, language: SlugBIP39Languages) -> Result<(SlugMnemonic, MLDSA87SecretSeed),SlugErrors> {
+        return Self::generate_with_bip39(number_of_words, language, DEFAULT_CONTEXT)
     }
 }

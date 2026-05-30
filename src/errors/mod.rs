@@ -161,6 +161,9 @@ pub enum SlugErrorAlgorithms {
     SYMENC_AES,
     SYMENC_XCHACHA20,
     UNKNOWN,
+
+    STD_MLDSA87,
+    STD_SLHDSA5,
 }
 
 /* 

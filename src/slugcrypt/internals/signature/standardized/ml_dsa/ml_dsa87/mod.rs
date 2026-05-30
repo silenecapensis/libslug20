@@ -17,6 +17,20 @@
 //! **Secret Key Size:** 4896-bytes or 32-byte seed
 //! 
 //! **Signature Size:** 4627-bytes
+//! 
+//! ### Implemented Traits
+//! 
+//! - [X] Bincode
+//!     - [X] FromBincode
+//!     - [X] IntoBincode
+//! - [X] Encoding
+//!     - [X] FromEncoding
+//!     - [X] IntoEncoding
+//! - [X] StandardPem
+//!     - [X] Into
+//!     - [X] From
+use std::str::FromStr;
+
 use ml_dsa_new::EncodedSignature;
 use ml_dsa_new::MlDsa87;
 use ml_dsa_new::Generate;
@@ -29,17 +43,50 @@ use ml_dsa_new::SignatureEncoding;
 use ml_dsa_new::Signer;
 use ml_dsa_new::Verifier;
 use ml_dsa_new::{SigningKey,VerifyingKey,Signature};
+use pem::Pem;
 use rand_2::CryptoRng;
 use securerand_rs::bip39::SlugBIP39Languages;
 use securerand_rs::bip39::SlugBIP39Words;
 use securerand_rs::bip39::SlugMnemonic;
 use serde::{Serialize,Deserialize};
 use serde_big_array::BigArray;
+use slugencode::SlugEncodingUsage;
+use slugencode::SlugEncodings;
 use zeroize::{Zeroize,ZeroizeOnDrop};
+use crate::errors::SlugErrorAlgorithms;
 use crate::errors::SlugErrors;
 use hybird_array_four::{Array,ArrayN,ArraySize};
 
+// =TRAITS IMPLEMENTED=
+use crate::slugcrypt::traits::{IntoEncoding,FromEncoding};
+use crate::slugcrypt::traits::{FromBincode,IntoBincode};
+use crate::slugcrypt::traits::{FromStandardPem, IntoStandardPem};
+// =END OF TRAITS IMPLEMENTED=
+
+//use crate::slugcrypt::traits::{IntoX59PublicKey,IntoX59SecretKey,IntoX59Signature};
+//use crate::slugcrypt::traits::{IntoStandardEncoding,FromStandardEncoding};
+
 pub const DEFAULT_CONTEXT: &str = "OpenInternetCryptographyProject";
+
+pub mod info {
+    /// # MLDSA-87 Cipher Suite
+    /// 
+    /// This is the cipher suite for MLDSA-87.
+    /// 
+    /// The cipher suite is "OpenInternetCryptographyProject/Standardized/ML-DSA87".
+    pub const CIPHER_SUITE: &str = "OpenInternetCryptographyProject/Standardized/ML-DSA87";
+
+    pub const NAME: &str = "MLDSA87";
+    pub const ALGORITHM: &str = "MLDSA87";
+    pub const CONTEXT: &str = "OpenInternetCryptographyProject";
+    pub const SECRET_SEED_SIZE_IN_BYTES: usize = 32;
+    /// 4896
+    pub const SECRET_KEY_SIZE_IN_BYTES: usize = 4_896;
+    /// 2592
+    pub const PUBLIC_KEY_SIZE_IN_BYTES: usize = 2_592;
+    /// 4627
+    pub const SIGNATURE_SIZE_IN_BYTES: usize = 4_627;
+}
 
 /// # MLDSA-87 Secret Key Seed
 /// 
@@ -249,6 +296,7 @@ impl GenerateMLDSA87 {
             Err(SlugErrors::Unknown)
         }
     }
+    /// # Generate With BIP39
     pub fn generate_with_bip39(number_of_words: SlugBIP39Words, language: SlugBIP39Languages, pass: &str) -> Result<(SlugMnemonic, MLDSA87SecretSeed),SlugErrors> {
         let x: SlugMnemonic = SlugMnemonic::new(number_of_words, language);
         let seed: MLDSA87SecretSeed = GenerateMLDSA87::generate_using_bip39(x.clone(), pass)?;
@@ -264,3 +312,460 @@ impl GenerateMLDSA87 {
         return Self::generate_with_bip39(number_of_words, language, DEFAULT_CONTEXT)
     }
 }
+
+impl MLDSA87SecretKey {
+    pub fn from_bytes(key: &[u8]) -> Result<Self,SlugErrors> {
+        if key.len() != 4896 {
+            Err(SlugErrors::Unknown)
+        }
+        else {
+            let mut output: [u8; 4896] = [0; 4896];
+            output.copy_from_slice(key);
+            return Ok(MLDSA87SecretKey { sk: output })
+        }
+    }
+    pub fn to_bytes(&self) -> [u8; 4896] {
+        return self.sk
+    }
+    pub fn as_bytes(&self) -> &[u8] {
+        return &self.sk
+    }
+    pub fn to_vec(&self) -> Vec<u8> {
+        return self.sk.to_vec()
+    }
+}
+
+//=====BINCODE=====//
+
+impl IntoBincode for MLDSA87PublicKey {
+    fn into_bincode(&self) -> Result<Vec<u8>,SlugErrors> {
+        let output = bincode::serialize(&self);
+
+        if output.is_err() {
+            return Err(SlugErrors::BincodeError{ alg: SlugErrorAlgorithms::STD_MLDSA87 })
+        }
+        else {
+            return Ok(output.unwrap())
+        }
+    }
+}
+
+impl IntoBincode for MLDSA87SecretSeed {
+    fn into_bincode(&self) -> Result<Vec<u8>,SlugErrors> {
+        let output = bincode::serialize(&self);
+
+        if output.is_err() {
+            return Err(SlugErrors::BincodeError{ alg: SlugErrorAlgorithms::STD_MLDSA87 })
+        }
+        else {
+            return Ok(output.unwrap())
+        }
+    }
+}
+
+impl IntoBincode for MLDSA87Signature {
+    fn into_bincode(&self) -> Result<Vec<u8>,SlugErrors> {
+        let output = bincode::serialize(&self);
+
+        if output.is_err() {
+            return Err(SlugErrors::BincodeError{ alg: SlugErrorAlgorithms::STD_MLDSA87 })
+        }
+        else {
+            return Ok(output.unwrap())
+        }
+    }
+}
+
+impl IntoBincode for MLDSA87SecretKey {
+    fn into_bincode(&self) -> Result<Vec<u8>,SlugErrors> {
+        let output = bincode::serialize(&self);
+
+        if output.is_err() {
+            return Err(SlugErrors::BincodeError{ alg: SlugErrorAlgorithms::STD_MLDSA87 })
+        }
+        else {
+            return Ok(output.unwrap())
+        }
+    }
+}
+
+impl FromBincode for MLDSA87SecretKey {
+    fn from_bincode<T: AsRef<[u8]>>(bytes: T) -> Result<Self,SlugErrors> {
+        let output: Result<MLDSA87SecretKey, Box<bincode::ErrorKind>> = bincode::deserialize(bytes.as_ref());
+
+        if output.is_err() {
+            return Err(SlugErrors::BincodeError{ alg: SlugErrorAlgorithms::STD_MLDSA87 })
+        }
+        else {
+            return Ok(output.unwrap())
+        }
+    }
+}
+
+impl FromBincode for MLDSA87PublicKey {
+    fn from_bincode<T: AsRef<[u8]>>(bytes: T) -> Result<Self,SlugErrors> {
+        let output: Result<MLDSA87PublicKey, Box<bincode::ErrorKind>> = bincode::deserialize(bytes.as_ref());
+
+        if output.is_err() {
+            return Err(SlugErrors::BincodeError{ alg: SlugErrorAlgorithms::STD_MLDSA87 })
+        }
+        else {
+            return Ok(output.unwrap())
+        }
+    }
+}
+
+impl FromBincode for MLDSA87Signature {
+    fn from_bincode<T: AsRef<[u8]>>(bytes: T) -> Result<Self,SlugErrors> {
+        let output: Result<MLDSA87Signature, Box<bincode::ErrorKind>> = bincode::deserialize(bytes.as_ref());
+
+        if output.is_err() {
+            return Err(SlugErrors::BincodeError{ alg: SlugErrorAlgorithms::STD_MLDSA87 })
+        }
+        else {
+            return Ok(output.unwrap())
+        }
+    }
+}
+
+impl FromBincode for MLDSA87SecretSeed {
+    fn from_bincode<T: AsRef<[u8]>>(bytes: T) -> Result<Self,SlugErrors> {
+        let output: Result<MLDSA87SecretSeed, Box<bincode::ErrorKind>> = bincode::deserialize(bytes.as_ref());
+
+        if output.is_err() {
+            return Err(SlugErrors::BincodeError{ alg: SlugErrorAlgorithms::STD_MLDSA87 })
+        }
+        else {
+            return Ok(output.unwrap())
+        }
+    }
+}
+
+//=====END BINCODE=====//
+
+//=====ENCODINGS=====//
+impl IntoEncoding for MLDSA87PublicKey {
+    fn into_hex(&self) -> Result<String,SlugErrors> {
+        let encoder = SlugEncodingUsage::new(SlugEncodings::Hex);
+        let output: String = encoder.encode(&self.pk)?;
+        Ok(output)
+    }
+    fn into_base32(&self) -> Result<String,SlugErrors> {
+        let output: String = SlugEncodingUsage::new(SlugEncodings::Base32).encode(&self.pk)?; 
+        Ok(output)
+    }
+    fn into_base32_unpadded(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base32unpadded).encode(&self.pk)?; 
+        Ok(output)
+    }
+    fn into_base58(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base58).encode(&self.pk)?; 
+        Ok(output)
+    }
+    fn into_base64(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base64).encode(&self.pk)?; 
+        Ok(output)
+    }
+    fn into_base64_url_safe(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base64urlsafe).encode(&self.pk)?; 
+        Ok(output)
+    }
+}
+
+impl IntoEncoding for MLDSA87Signature {
+    fn into_hex(&self) -> Result<String,SlugErrors> {
+        let encoder = SlugEncodingUsage::new(SlugEncodings::Hex);
+        let output: String = encoder.encode(&self.sig)?; 
+        Ok(output)
+    }
+    fn into_base32(&self) -> Result<String,SlugErrors> {
+        let output: String = SlugEncodingUsage::new(SlugEncodings::Base32).encode(&self.sig)?; 
+        Ok(output)
+    }
+    fn into_base32_unpadded(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base32unpadded).encode(&self.sig)?; 
+        Ok(output)
+    }
+    fn into_base58(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base58).encode(&self.sig)?; 
+        Ok(output)
+    }
+    fn into_base64(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base64).encode(&self.sig)?; 
+        Ok(output)
+    }
+    fn into_base64_url_safe(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base64urlsafe).encode(&self.sig)?; 
+        Ok(output)
+    }
+}
+
+impl IntoEncoding for MLDSA87SecretKey {
+    fn into_hex(&self) -> Result<String,SlugErrors> {
+        let encoder = SlugEncodingUsage::new(SlugEncodings::Hex);
+        let output: String = encoder.encode(&self.sk)?; 
+        Ok(output)
+    }
+    fn into_base32(&self) -> Result<String,SlugErrors> {
+        let output: String = SlugEncodingUsage::new(SlugEncodings::Base32).encode(&self.sk)?; 
+        Ok(output)
+    }
+    fn into_base32_unpadded(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base32unpadded).encode(&self.sk)?; 
+        Ok(output)
+    }
+    fn into_base58(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base58).encode(&self.sk)?; 
+        Ok(output)
+    }
+    fn into_base64(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base64).encode(&self.sk)?;
+        Ok(output)
+    }
+    fn into_base64_url_safe(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base64urlsafe).encode(&self.sk)?; 
+        Ok(output)
+    }
+}
+
+impl IntoEncoding for MLDSA87SecretSeed {
+    fn into_hex(&self) -> Result<String,SlugErrors> {
+        let encoder = SlugEncodingUsage::new(SlugEncodings::Hex);
+        let output: String = encoder.encode(&self.seed)?; 
+        Ok(output)
+    }
+    fn into_base32(&self) -> Result<String,SlugErrors> {
+        let output: String = SlugEncodingUsage::new(SlugEncodings::Base32).encode(&self.seed)?; 
+        Ok(output)
+    }
+    fn into_base32_unpadded(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base32unpadded).encode(&self.seed)?; 
+        Ok(output)
+    }
+    fn into_base58(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base58).encode(&self.seed)?; 
+        Ok(output)
+    }
+    fn into_base64(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base64).encode(&self.seed)?; 
+        Ok(output)
+    }
+    fn into_base64_url_safe(&self) -> Result<String,SlugErrors> {
+        let output = SlugEncodingUsage::new(SlugEncodings::Base64urlsafe).encode(&self.seed)?; 
+        Ok(output)
+    }
+}
+
+impl FromEncoding for MLDSA87PublicKey {
+    fn from_hex<T: AsRef<str>>(input: T) -> Result<MLDSA87PublicKey,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Hex).decode(input)?; 
+        Ok(MLDSA87PublicKey::from_bytes(&input)?)
+    }
+    fn from_base32<T: AsRef<str>>(input: T) -> Result<MLDSA87PublicKey,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base32).decode(input)?; 
+        Ok(MLDSA87PublicKey::from_bytes(&input)?)
+    }
+    fn from_base32_unpadded<T: AsRef<str>>(input: T) -> Result<MLDSA87PublicKey,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base32unpadded).decode(input)?; 
+        Ok(MLDSA87PublicKey::from_bytes(&input)?)
+    }
+    fn from_base58<T: AsRef<str>>(input: T) -> Result<MLDSA87PublicKey,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base58).decode(input)?; 
+        Ok(MLDSA87PublicKey::from_bytes(&input)?)
+    }
+    fn from_base64<T: AsRef<str>>(input: T) -> Result<MLDSA87PublicKey,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base64).decode(input)?; 
+        Ok(MLDSA87PublicKey::from_bytes(&input)?)
+    }
+    fn from_base64_url_safe<T: AsRef<str>>(input: T) -> Result<MLDSA87PublicKey,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base64urlsafe).decode(input)?; 
+        Ok(MLDSA87PublicKey::from_bytes(&input)?)
+    }
+}
+
+impl FromEncoding for MLDSA87SecretKey {
+    fn from_hex<T: AsRef<str>>(input: T) -> Result<MLDSA87SecretKey,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Hex).decode(input)?; 
+        Ok(MLDSA87SecretKey::from_bytes(&input)?)
+    }
+    fn from_base32<T: AsRef<str>>(input: T) -> Result<MLDSA87SecretKey,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base32).decode(input)?; 
+        Ok(MLDSA87SecretKey::from_bytes(&input)?)
+    }
+    fn from_base32_unpadded<T: AsRef<str>>(input: T) -> Result<MLDSA87SecretKey,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base32unpadded).decode(input)?; 
+        Ok(MLDSA87SecretKey::from_bytes(&input)?)
+    }
+    fn from_base58<T: AsRef<str>>(input: T) -> Result<MLDSA87SecretKey,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base58).decode(input)?; 
+        Ok(MLDSA87SecretKey::from_bytes(&input)?)
+    }
+    fn from_base64<T: AsRef<str>>(input: T) -> Result<MLDSA87SecretKey,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base64).decode(input)?; 
+        Ok(MLDSA87SecretKey::from_bytes(&input)?)
+    }
+    fn from_base64_url_safe<T: AsRef<str>>(input: T) -> Result<MLDSA87SecretKey,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base64urlsafe).decode(input)?; 
+        Ok(MLDSA87SecretKey::from_bytes(&input)?)
+    }
+}
+
+impl FromEncoding for MLDSA87Signature {
+    fn from_hex<T: AsRef<str>>(input: T) -> Result<MLDSA87Signature,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Hex).decode(input)?; 
+        Ok(MLDSA87Signature::from_bytes(&input)?)
+    }
+    fn from_base32<T: AsRef<str>>(input: T) -> Result<MLDSA87Signature,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base32).decode(input)?; 
+        Ok(MLDSA87Signature::from_bytes(&input)?)
+    }
+    fn from_base32_unpadded<T: AsRef<str>>(input: T) -> Result<MLDSA87Signature,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base32unpadded).decode(input)?; 
+        Ok(MLDSA87Signature::from_bytes(&input)?)
+    }
+    fn from_base58<T: AsRef<str>>(input: T) -> Result<MLDSA87Signature,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base58).decode(input)?; 
+        Ok(MLDSA87Signature::from_bytes(&input)?)
+    }
+    fn from_base64<T: AsRef<str>>(input: T) -> Result<MLDSA87Signature,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base64).decode(input)?; 
+        Ok(MLDSA87Signature::from_bytes(&input)?)
+    }
+    fn from_base64_url_safe<T: AsRef<str>>(input: T) -> Result<MLDSA87Signature,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base64urlsafe).decode(input)?; 
+        Ok(MLDSA87Signature::from_bytes(&input)?)
+    }
+}
+
+impl FromEncoding for MLDSA87SecretSeed {
+    fn from_hex<T: AsRef<str>>(input: T) -> Result<MLDSA87SecretSeed,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Hex).decode(input)?; 
+        Ok(MLDSA87SecretSeed::from_bytes(&input)?)
+    }
+    fn from_base32<T: AsRef<str>>(input: T) -> Result<MLDSA87SecretSeed,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base32).decode(input)?; 
+        Ok(MLDSA87SecretSeed::from_bytes(&input)?)
+    }
+    fn from_base32_unpadded<T: AsRef<str>>(input: T) -> Result<MLDSA87SecretSeed,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base32unpadded).decode(input)?; 
+        Ok(MLDSA87SecretSeed::from_bytes(&input)?)
+    }
+    fn from_base58<T: AsRef<str>>(input: T) -> Result<MLDSA87SecretSeed,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base58).decode(input)?; 
+        Ok(MLDSA87SecretSeed::from_bytes(&input)?)
+    }
+    fn from_base64<T: AsRef<str>>(input: T) -> Result<MLDSA87SecretSeed,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base64).decode(input)?; 
+        Ok(MLDSA87SecretSeed::from_bytes(&input)?)
+    }
+    fn from_base64_url_safe<T: AsRef<str>>(input: T) -> Result<MLDSA87SecretSeed,SlugErrors> {
+        let input = SlugEncodingUsage::new(SlugEncodings::Base64urlsafe).decode(input)?; 
+        Ok(MLDSA87SecretSeed::from_bytes(&input)?)
+    }
+}
+
+//=====END OF ENCODINGS=====//
+
+//=====START OF PEM=====//
+
+impl IntoStandardPem for MLDSA87PublicKey {
+    fn into_standard_pem(&self) -> Result<String,SlugErrors> {
+        let x: Vec<u8> = self.into_bincode()?;
+        let pem = Pem::new(&Self::label_for_standard_pem(), x);
+        return Ok(pem.to_string())
+    }
+    fn label_for_standard_pem() -> String {
+        String::from("OpenInternetCryptographyProject/Standard/MLDSA87-Public-Key")
+    }
+    fn label_for_standard_pem_secret() -> String {
+        String::from("OpenInternetCryptographyProject/Standard/MLDSA87-Secret-Key")
+    }
+}
+
+impl IntoStandardPem for MLDSA87SecretKey {
+    fn into_standard_pem(&self) -> Result<String,SlugErrors> {
+        let x: Vec<u8> = self.into_bincode()?;
+        let pem = Pem::new(&Self::label_for_standard_pem(), x);
+        return Ok(pem.to_string())
+    }
+    fn label_for_standard_pem() -> String {
+        String::from("OpenInternetCryptographyProject/Standard/MLDSA87-Secret-Key")
+    }
+    fn label_for_standard_pem_secret() -> String {
+        String::from("OpenInternetCryptographyProject/Standard/MLDSA87-Secret-Key")
+    }
+}
+
+impl IntoStandardPem for MLDSA87Signature {
+    fn into_standard_pem(&self) -> Result<String,SlugErrors> {
+        let x: Vec<u8> = self.into_bincode()?;
+        let pem = Pem::new(&Self::label_for_standard_pem(), x);
+        return Ok(pem.to_string())
+    }
+    fn label_for_standard_pem() -> String {
+        String::from("OpenInternetCryptographyProject/Standard/MLDSA87-Signature")
+    }
+    fn label_for_standard_pem_secret() -> String {
+        String::from("OpenInternetCryptographyProject/Standard/MLDSA87-Secret-Key")
+    }
+}
+
+impl IntoStandardPem for MLDSA87SecretSeed {
+    fn into_standard_pem(&self) -> Result<String,SlugErrors> {
+        let x: Vec<u8> = self.into_bincode()?;
+        let pem = Pem::new(&Self::label_for_standard_pem(), x);
+        return Ok(pem.to_string())
+    }
+    fn label_for_standard_pem() -> String {
+        String::from("OpenInternetCryptographyProject/Standard/MLDSA87-Secret-Seed")
+    }
+    fn label_for_standard_pem_secret() -> String {
+        String::from("OpenInternetCryptographyProject/Standard/MLDSA87-Secret-Seed")
+    }
+}
+
+impl FromStandardPem for MLDSA87PublicKey {
+    fn from_standard_pem<T: AsRef<str>>(input: T) -> Result<MLDSA87PublicKey,SlugErrors> {
+        let pem: Pem = Pem::from_str(input.as_ref()).unwrap();
+        if pem.tag() != Self::label_for_standard_pem() {
+            return Err(SlugErrors::Other(String::from("MLDSA87 Public Key From Standard Pem Failure")))
+        }
+        let decoded: MLDSA87PublicKey = Self::from_bincode(&pem.contents())?;
+        Ok(decoded)
+    }
+}
+
+impl FromStandardPem for MLDSA87SecretKey {
+    fn from_standard_pem<T: AsRef<str>>(input: T) -> Result<MLDSA87SecretKey,SlugErrors> {
+        let pem: Pem = Pem::from_str(input.as_ref()).unwrap();
+        if pem.tag() != Self::label_for_standard_pem() {
+            return Err(SlugErrors::Other(String::from("MLDSA87 Secret Key From Standard Pem Failure")))
+        }
+        let decoded: MLDSA87SecretKey = Self::from_bincode(&pem.contents())?;
+        Ok(decoded)
+    }
+}
+
+impl FromStandardPem for MLDSA87SecretSeed {
+    fn from_standard_pem<T: AsRef<str>>(input: T) -> Result<MLDSA87SecretSeed,SlugErrors> {
+        let pem: Pem = Pem::from_str(input.as_ref()).unwrap();
+        if pem.tag() != Self::label_for_standard_pem() {
+            return Err(SlugErrors::Other(String::from("MLDSA87 Secret Seed From Standard Pem Failure")))
+        }
+        let decoded: MLDSA87SecretSeed = Self::from_bincode(&pem.contents())?;
+        Ok(decoded)
+    }
+}
+
+impl FromStandardPem for MLDSA87Signature {
+    fn from_standard_pem<T: AsRef<str>>(input: T) -> Result<MLDSA87Signature,SlugErrors> {
+        let pem: Pem = Pem::from_str(input.as_ref()).unwrap();
+        if pem.tag() != Self::label_for_standard_pem() {
+            return Err(SlugErrors::Other(String::from("MLDSA87 Signature From Standard Pem Failure")))
+        }
+        let decoded: MLDSA87Signature = Self::from_bincode(&pem.contents())?;
+        Ok(decoded)
+    }
+}
+
+//=====END OF PEM=====

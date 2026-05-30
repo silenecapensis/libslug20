@@ -42,6 +42,7 @@ use hybird_array_four::{Array,ArraySize,ArrayN,AssocArraySize};
 use crate::errors::SlugErrors;
 
 pub mod info {
+    pub const CIPHER_SUITE: &str = "OpenInternetCryptographyProject/Standardized/SLH-DSA5";
     pub const PROTOCOL_NAME: &str = "libslug20/slh_dsa_shake256_level_5";
     pub const PUBLIC_KEY_SIZE: usize = 64;
     pub const SECRET_KEY_SIZE: usize = 128;
@@ -59,17 +60,22 @@ pub struct SLHDSA5SecretKey {
     pub sk: [u8; 128]
 }
 
-impl SLHDSA5SecretKey {
-    pub fn from_bytes(bytes: &[u8]) -> Result<Self, SlugErrors> {
-        if bytes.len() == 128 {
-            let mut sk_array: [u8; 128] = [0u8; 128];
-            sk_array.copy_from_slice(bytes);
-            Ok(Self { sk: sk_array })
-        }
-        else {
-            return Err(SlugErrors::Unknown)
-        }
+#[derive(Debug, Serialize, Deserialize, Clone, Zeroize, ZeroizeOnDrop, PartialEq, PartialOrd, Hash)]
+pub struct SLHDSA5Signature {
+    #[serde(with = "BigArray")]
+    pub sig: [u8; 29_792]
+}
+
+pub struct GenerateSLHDSA5;
+
+impl GenerateSLHDSA5 {
+    pub fn generate() -> SLHDSA5SecretKey {
+        SLHDSA5SecretKey::generate_using_threadrng()
     }
+}
+
+impl SLHDSA5SecretKey {
+
     pub fn generate_using_threadrng() -> Self {
         let mut rng = rand_2::rng();    
         let signing_key = slh_dsa::SigningKey::<Shake256s>::new(&mut rng);
@@ -107,24 +113,30 @@ impl SLHDSA5SecretKey {
     pub fn from_bip39(mnemonic: SlugMnemonic, password: &str) -> SLHDSA5SecretKey {
         Self::generate_with_bip39_advanced(mnemonic, password)
     }
-    pub fn into_usable_type(&self) -> Result<(),SlugErrors> {
-        let bytes = Array::try_from(self.sk);
+    pub fn to_usable_type(&self) -> SLHDSA5SecretKey {
+        let x = SigningKey::<Shake256s>::try_from(&self.sk.to_vec());
+    }
 
-        if bytes.is_err() {
+
+    //=====BYTES======//
+    pub fn from_bytes(bytes: &[u8]) -> Result<Self, SlugErrors> {
+        if bytes.len() == 128 {
+            let mut sk_array: [u8; 128] = [0u8; 128];
+            sk_array.copy_from_slice(bytes);
+            Ok(Self { sk: sk_array })
+        }
+        else {
             return Err(SlugErrors::Unknown)
         }
-        //let bytes = bytes.unwrap();
-        //let signing_key = slh_dsa::SigningKey::<Shake256s>::from_bytes(&bytes).unwrap();
-        //return Ok(signing_key)
-        Ok(())
     }
-    pub fn public_key(&self) -> SLHDSA5PublicKey {
-        let sk = self.into_usable_type().unwrap();
-        let pk = sk.verifying_key();
-        let bytes = pk.to_vec();
-        let mut pk_array = [0u8; 64];
-        pk_array.copy_from_slice(&bytes[0..64]);
-        return SLHDSA5PublicKey::from_bytes(&pk_array).unwrap()
+    pub fn to_bytes(&self) -> [u8; 128] {
+        return self.sk
+    }
+    pub fn as_bytes(&self) -> &[u8] {
+        return &self.sk
+    }
+    pub fn to_vec(&self) -> Vec<u8> {
+        return self.sk.to_vec()
     }
 }
 
@@ -138,5 +150,14 @@ impl SLHDSA5PublicKey {
         else {
             return Err(SlugErrors::Unknown)
         }
+    }
+    pub fn to_bytes(&self) -> [u8; 64] {
+        return self.pk
+    }
+    pub fn as_bytes(&self) -> &[u8] {
+        return &self.pk
+    }
+    pub fn to_vec(&self) -> Vec<u8> {
+        return self.pk.to_vec()
     }
 }

@@ -15,4 +15,5 @@
 //! 
 //! - [ ] Add support for SLH-DSA (Level 5) using SHAKE256s
 
+/// SLH-DSA (Level 5) using SHAKE256s
 pub mod slh_dsa_shake256;

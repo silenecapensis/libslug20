@@ -21,16 +21,25 @@
 //! - [ ] Signing
 //! - [ ] Encoding
 
+use digest::typenum::U64;
 use securerand_rs::bip39::*;
 use serde::{Serialize,Deserialize};
 use zeroize::{Zeroize,ZeroizeOnDrop};
 use serde_big_array::BigArray;
 use slh_dsa::Shake256s;
 use slh_dsa::*;
+use slh_dsa::VerifyingKey;
 use slh_dsa::ParameterSet;
 use slh_dsa::signature::Keypair;
 use slh_dsa::signature::RandomizedSigner;
 use slh_dsa::signature::Signer;
+use slh_dsa::VerifyingKeyLen;
+use slh_dsa::SigningKeyLen;
+use slh_dsa::signature::Verifier;
+use slh_dsa::signature::SignatureEncoding;
+use slh_dsa::signature::KeypairRef;
+
+
 use slugencode::SlugEncodingUsage;
 use rand::rngs::OsRng;
 use rand::CryptoRng;
@@ -113,11 +122,6 @@ impl SLHDSA5SecretKey {
     pub fn from_bip39(mnemonic: SlugMnemonic, password: &str) -> SLHDSA5SecretKey {
         Self::generate_with_bip39_advanced(mnemonic, password)
     }
-    pub fn to_usable_type(&self) -> SLHDSA5SecretKey {
-        let x = SigningKey::<Shake256s>::try_from(&self.sk.to_vec());
-    }
-
-
     //=====BYTES======//
     pub fn from_bytes(bytes: &[u8]) -> Result<Self, SlugErrors> {
         if bytes.len() == 128 {
@@ -159,5 +163,29 @@ impl SLHDSA5PublicKey {
     }
     pub fn to_vec(&self) -> Vec<u8> {
         return self.pk.to_vec()
+    }
+    pub fn to_hybrid_array(&self) -> Result<Array<u8, U64>, SlugErrors> {
+        let x = Array::slice_as_array(&self.pk);
+        
+        if x.is_some() {
+            return Ok(x.unwrap().to_owned())
+        }
+        else {
+            return Err(SlugErrors::InvalidLengthFromBytes)
+        }
+    }
+    pub fn to_usable_type(&self) -> Result<VerifyingKey<Shake256s>, SlugErrors> {
+        let x = &self.to_hybrid_array()?;
+        let output: Result<VerifyingKey<Shake<digest::typenum::UInt<digest::typenum::UInt<digest::typenum::UInt<digest::typenum::UInt<digest::typenum::UInt<digest::typenum::UInt<digest::typenum::UTerm, digest::typenum::B1>, digest::typenum::B0>, digest::typenum::B0>, digest::typenum::B0>, digest::typenum::B0>, digest::typenum::B0>, digest::typenum::UInt<digest::typenum::UInt<digest::typenum::UInt<digest::typenum::UInt<digest::typenum::UInt<digest::typenum::UInt<digest::typenum::UTerm, digest::typenum::B1>, digest::typenum::B0>, digest::typenum::B1>, digest::typenum::B1>, digest::typenum::B1>, digest::typenum::B1>>>, ed448::Error> = VerifyingKey::<Shake256s>::try_from(x.as_slice());
+
+        if output.is_ok() {
+            return Ok(output.unwrap())
+        }
+        else {
+            return Err(SlugErrors::Unknown)
+        }    
+    }
+    pub fn verify<T: AsRef<[u8]>>(&self, msg: T, signature: SLHDSA5Signature) {
+        let x = self.to_usable_type().unwrap().verify_strict(msg.as_ref(), &signature.to_usable_type()).unwrap();
     }
 }

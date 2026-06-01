@@ -22,8 +22,10 @@
 //! - [ ] Encoding
 
 use digest::typenum::U64;
+use digest::typenum::U128;
 use securerand_rs::bip39::*;
 use serde::{Serialize,Deserialize};
+use slh_dsa::SigningKey;
 use zeroize::{Zeroize,ZeroizeOnDrop};
 use serde_big_array::BigArray;
 use slh_dsa::Shake256s;
@@ -38,11 +40,12 @@ use slh_dsa::SigningKeyLen;
 use slh_dsa::signature::Verifier;
 use slh_dsa::signature::SignatureEncoding;
 use slh_dsa::signature::KeypairRef;
-
+use slh_dsa::signature::RandomizedSignerMut;
 
 use slugencode::SlugEncodingUsage;
 use rand::rngs::OsRng;
 use rand::CryptoRng;
+use rand_2::TryRng;
 
 use rand_2::rngs::SysRng;
 
@@ -87,7 +90,7 @@ impl SLHDSA5SecretKey {
 
     pub fn generate_using_threadrng() -> Self {
         let mut rng = rand_2::rng();    
-        let signing_key = slh_dsa::SigningKey::<Shake256s>::new(&mut rng);
+        let signing_key = SigningKey::<Shake256s>::new(&mut rng);
         let bytes = signing_key.to_vec();
 
         let mut sk = [0u8; 128];
@@ -97,7 +100,7 @@ impl SLHDSA5SecretKey {
     }
     pub fn generate_with_bip39_advanced(mnemonic: SlugMnemonic, pass: &str) -> SLHDSA5SecretKey {
         let mut rng: MnemnonicSeed = mnemonic.to_seed_with_crypto(pass).unwrap();
-        let signing_key = slh_dsa::SigningKey::<Shake256s>::new(&mut rng);
+        let signing_key = SigningKey::<Shake256s>::new(&mut rng);
         let bytes = signing_key.to_vec();
 
         let mut sk = [0u8; 128];
@@ -108,7 +111,7 @@ impl SLHDSA5SecretKey {
     pub fn generate_with_bip39(number_of_words: SlugBIP39Words, language: SlugBIP39Languages, pass: &str) -> (SlugMnemonic, SLHDSA5SecretKey) {
         let x: SlugMnemonic = SlugMnemonic::new(number_of_words, language);
         let mut rng: MnemnonicSeed = x.to_seed_with_crypto(pass).unwrap();
-        let signing_key = slh_dsa::SigningKey::<Shake256s>::new(&mut rng);
+        let signing_key = SigningKey::<Shake256s>::new(&mut rng);
         let bytes = signing_key.to_vec();
 
         let mut sk = [0u8; 128];
@@ -141,6 +144,37 @@ impl SLHDSA5SecretKey {
     }
     pub fn to_vec(&self) -> Vec<u8> {
         return self.sk.to_vec()
+    }
+    pub fn to_hybrid_array(&self) -> Result<Array<u8, U128>, SlugErrors> { 
+        return Ok(Array::from(self.sk)) 
+    }
+    pub fn to_usable_type(&self) -> Result<SigningKey<Shake256s>,SlugErrors> {
+        let y = self.to_hybrid_array()?;
+        let x = SigningKey::<Shake256s>::try_from(y.as_slice());
+
+        if x.is_err() {
+            return Err(SlugErrors::Unknown)
+        }
+        else {
+            return Ok(x.unwrap())
+        }
+    }
+    pub fn sign<T: AsRef<[u8]>>(&self, message: T) -> Result<SLHDSA5Signature, SlugErrors> {
+        let sk = self.to_usable_type()?;       
+        let sig = sk.sign(message.as_ref());
+        let output = sig.to_bytes().to_vec();
+        let mut sig_array: [u8; 29792] = [0u8; 29_792];
+        sig_array.copy_from_slice(&output[0..29_792]);
+        Ok(SLHDSA5Signature { sig: sig_array })
+    }
+    pub fn sign_with_rng<T: AsRef<[u8]>>(&self, message: T) -> Result<SLHDSA5Signature, SlugErrors> {
+        let mut rng: SysRng = rand_2::rngs::SysRng;
+        let sk = self.to_usable_type()?;
+        let sig = sk.sign_with_rng(&mut rng,message.as_ref());       
+        let output = sig.to_bytes().to_vec();
+        let mut sig_array: [u8; 29792] = [0u8; 29_792];
+        sig_array.copy_from_slice(&output[0..29_792]);
+        Ok(SLHDSA5Signature { sig: sig_array })
     }
 }
 

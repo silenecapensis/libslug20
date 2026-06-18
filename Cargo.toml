@@ -34,7 +34,7 @@ argon2 = { version= "0.5.3",optional=true}
 # Security
 subtle = "2.6.1"
 subtle-encoding = "0.5.1"
-zeroize = "1.8.2"
+zeroize = "1.9.0"
 
 # Serialization
 serde = { version = "1.0.0", features=["derive"] }
@@ -107,11 +107,11 @@ bip32 = { version = "0.5.3", optional=true}
 # Error Handling
 thiserror = "2.0.18"
 
-fixedstr = {version="0.5.10",features=["serde"]}
+fixedstr = {version="0.5.11",features=["serde"]}
 
 rsa = {version="0.9.10", optional=true}
 
-log = "0.4.29"
+log = "0.4.32"
 
 # DER + PEM
 der = "0.8.0"
@@ -121,7 +121,7 @@ pem = "3.0.6"
 slh-dsa = {version = "=0.2.0-rc.5", optional=true}
 
 # Protobuf
-protobuf = "4.34.1-release"
+protobuf = "4.35.1-release"
 
 [features]
 default = ["full"]

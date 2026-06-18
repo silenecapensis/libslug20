@@ -4,7 +4,7 @@ members = ["oint-keys", "slug20-cli","x59pk-fmt", "app/openinternetcryptography/
 
 [package]
 name = "libslug"
-version = "0.11.0"
+version = "0.12.0"
 edition = "2021"
 keywords = ["crypto","cryptography","encryption","digest","signature"]
 categories = ["cryptography"]

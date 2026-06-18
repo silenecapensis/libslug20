@@ -121,7 +121,7 @@ pem = "3.0.6"
 slh-dsa = {version = "=0.2.0-rc.5", optional=true}
 
 # Protobuf
-protobuf = "4.35.1-release"
+protobuf = "4.34.1-release"
 
 [features]
 default = ["full"]

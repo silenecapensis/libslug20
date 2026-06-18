@@ -3119,6 +3119,65 @@ dependencies = [
 [[package]]
 name = "libslug"
 version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "441ad313cb1ceb44e1dd930f4fd4648deb2dd82a72e98da7a8fad250b91d0261"
+dependencies = [
+ "aes-gcm",
+ "argon2",
+ "ascon-aead128",
+ "base32",
+ "base58",
+ "bincode",
+ "bip32",
+ "blake2",
+ "blake3",
+ "bls-signatures",
+ "chacha20poly1305 0.10.1",
+ "der 0.8.0",
+ "digest 0.11.3",
+ "dirs",
+ "ecdsa",
+ "ecies-ed25519-silene",
+ "ed25519-dalek",
+ "ed448 0.4.0",
+ "ed448-goldilocks",
+ "ed448-goldilocks-plus",
+ "fixedstr",
+ "hybrid-array 0.2.3",
+ "hybrid-array 0.3.1",
+ "k256",
+ "leslie_lamport",
+ "log",
+ "ml-dsa 0.0.4",
+ "ml-kem",
+ "pem",
+ "pqcrypto-falcon",
+ "pqcrypto-sphincsplus",
+ "pqcrypto-traits",
+ "protobuf",
+ "rand 0.8.5",
+ "rsa",
+ "schnorrkel",
+ "securerand-rs 0.2.0",
+ "serde",
+ "serde-big-array",
+ "serde-encrypt",
+ "serde_json",
+ "serde_yaml 0.9.34+deprecated",
+ "sha2 0.11.0",
+ "slugencode",
+ "subtle",
+ "subtle-encoding",
+ "thiserror 2.0.18",
+ "tiny-bip39",
+ "tiny-keccak",
+ "winternitz-ots",
+ "zeroize",
+]
+
+[[package]]
+name = "libslug"
+version = "0.12.0"
 dependencies = [
  "aes-gcm",
  "argon2",
@@ -3170,65 +3229,6 @@ dependencies = [
  "serde_yaml 0.9.34+deprecated",
  "sha2 0.11.0",
  "slh-dsa",
- "slugencode",
- "subtle",
- "subtle-encoding",
- "thiserror 2.0.18",
- "tiny-bip39",
- "tiny-keccak",
- "winternitz-ots",
- "zeroize",
-]
-
-[[package]]
-name = "libslug"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "441ad313cb1ceb44e1dd930f4fd4648deb2dd82a72e98da7a8fad250b91d0261"
-dependencies = [
- "aes-gcm",
- "argon2",
- "ascon-aead128",
- "base32",
- "base58",
- "bincode",
- "bip32",
- "blake2",
- "blake3",
- "bls-signatures",
- "chacha20poly1305 0.10.1",
- "der 0.8.0",
- "digest 0.11.3",
- "dirs",
- "ecdsa",
- "ecies-ed25519-silene",
- "ed25519-dalek",
- "ed448 0.4.0",
- "ed448-goldilocks",
- "ed448-goldilocks-plus",
- "fixedstr",
- "hybrid-array 0.2.3",
- "hybrid-array 0.3.1",
- "k256",
- "leslie_lamport",
- "log",
- "ml-dsa 0.0.4",
- "ml-kem",
- "pem",
- "pqcrypto-falcon",
- "pqcrypto-sphincsplus",
- "pqcrypto-traits",
- "protobuf",
- "rand 0.8.5",
- "rsa",
- "schnorrkel",
- "securerand-rs 0.2.0",
- "serde",
- "serde-big-array",
- "serde-encrypt",
- "serde_json",
- "serde_yaml 0.9.34+deprecated",
- "sha2 0.11.0",
  "slugencode",
  "subtle",
  "subtle-encoding",
@@ -3703,7 +3703,7 @@ name = "oint-keys"
 version = "0.1.1"
 dependencies = [
  "fixedstr",
- "libslug 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libslug 0.11.0",
  "pem",
  "serde",
  "zeroize",
@@ -3744,7 +3744,7 @@ name = "openinternetcryptography"
 version = "0.1.0"
 dependencies = [
  "dirs",
- "libslug 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libslug 0.11.0",
  "openinternetcryptographykeys 0.1.0",
  "semver",
  "serde",
@@ -3766,7 +3766,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cb8ae069f42809cc2dd2305ed974a8feeb8f9cf5d2262164eed10afa5df98725"
 dependencies = [
  "fixedstr",
- "libslug 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libslug 0.11.0",
  "serde",
  "zeroize",
 ]
@@ -3776,7 +3776,7 @@ name = "openinternetcryptographykeys"
 version = "0.2.0"
 dependencies = [
  "fixedstr",
- "libslug 0.11.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "libslug 0.11.0",
  "serde",
  "slugencode",
  "zeroize",
@@ -7744,18 +7744,18 @@ dependencies = [
 
 [[package]]
 name = "zeroize"
-version = "1.8.2"
+version = "1.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b97154e67e32c85465826e8bcc1c59429aaaf107c1e4a9e53c8d8ccd5eff88d0"
+checksum = "e13c156562582aa81c60cb29407084cdb54c4164760106ab78e6c5b0858cf64e"
 dependencies = [
  "zeroize_derive",
 ]
 
 [[package]]
 name = "zeroize_derive"
-version = "1.4.2"
+version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ce36e65b0d2999d2aafac989fb249189a141aee1f53c612c1f37d72631959f69"
+checksum = "3c50655cbb0fe3fc43170059e702f1ce5e19b84cec58dc87b037a09935c2f328"
 dependencies = [
  "proc-macro2",
  "quote",

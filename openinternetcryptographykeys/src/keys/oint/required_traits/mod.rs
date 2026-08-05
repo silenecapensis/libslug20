@@ -76,6 +76,14 @@ pub trait OpenInternetGeneration: Sized {
     fn generate_with_algorithm(alg: Slug20Algorithm) -> Result<Self, SlugErrors>;
 }
 
+pub trait OpenInternetGenerationBIP39: Sized {
+    fn generate_with_bip39_phrase<T: AsRef<str>>(phrase: T, alg: Slug20Algorithm) -> Result<Self, SlugErrors>;
+}
+
+pub trait FromBIP39: Sized {
+    fn from_bip39_phrase<T: AsRef<str>>(phrase: T, alg: Slug20Algorithm) -> Result<Self, SlugErrors>;
+}
+
 //=====OPENINTERNETCRYPTOGRAPHYKEYS OINT REQUIRED TRAITS END=====
 /// # OpenInternetIntoStandardPEM Trait
 /// 

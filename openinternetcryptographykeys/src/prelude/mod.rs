@@ -7,6 +7,7 @@ pub mod essentials {
     pub use crate::keys::oint::usage::OpenInternetCryptographyAPI;
     pub use crate::keys::oint::__types::FromPemAny;
     pub use crate::keys::oint::__types::PemEncodingSuites; 
+    pub use crate::keys::oint::required_traits::OpenInternetCryptographyTraits;
 }
 
 pub mod encryption {

@@ -31,6 +31,11 @@ use crate::{keys::oint::{__types::{FromPemAny, Slug20Algorithm}, usage::{OpenInt
 
 //=====OPENINTERNETCRYPTOGRAPHYKEYS OINT REQUIRED TRAITS=====
 
+/// # OpenInternetCryptographyTraits Trait
+/// 
+/// This trait is a composite of all the required traits for Open Internet Cryptography Keys (OICK) key types, ensuring that any type implementing this trait adheres to the necessary functionality for signing, verifying, key derivation, and generation as defined by the OICK specification.
+pub trait OpenInternetCryptographyTraits: OpenInternetSigner + OpenInternetVerifier + OpenInternetPublicKeyDerive + OpenInternetGeneration + OpenInternetIntoStandardPEM + OpenInternetFromStandardPEM + OpenInternetFromPemAny {}
+
 /// # OpenInternetSigner Trait
 /// 
 /// This trait implements signing functionality for the Open Internet Cryptography Keys (OICK) library, allowing for signing messages with a context to produce a signature.

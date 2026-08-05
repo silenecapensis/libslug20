@@ -8,11 +8,11 @@ readme = "README.md"
 repository = "https://github.com/sileneundula/libslug20/tree/master/oint-keys"
 homepage = "https://wespeakincursive.xyz"
 license = "Apache-2.0 OR MIT"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 
 [dependencies]
-libslug = "0.11.0"
+libslug = "0.13.0"
 serde = {version="1.0.0", features=["derive"], optional=true}
 fixedstr = {version="0.5.10", features=["serde"]}
 zeroize = {version="1.8.2", features=["derive"]}

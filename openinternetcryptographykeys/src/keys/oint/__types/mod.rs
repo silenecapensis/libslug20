@@ -410,7 +410,7 @@ impl Slug20Algorithm {
         }
     }
     pub fn enumerate_pem_labels() -> Vec<Vec<String>> {
-        let public_keys_pem_labels = {
+        let public_keys_pem_labels =
             vec![
                 ShulginKeypair::label_for_standard_pem(),
                 AbsolveKeypair::label_for_standard_pem(),
@@ -423,9 +423,8 @@ impl Slug20Algorithm {
                 SchnorrPublicKey::label_for_standard_pem(),
                 SPHINCSPublicKey::label_for_standard_pem(),
                 BLSPublicKey::label_for_standard_pem(),
-            ]
-        };
-        let secret_keys_pem_labels = {
+            ];
+        let secret_keys_pem_labels =
             vec![
                 ShulginKeypair::label_for_standard_pem_secret(),
                 AbsolveKeypair::label_for_standard_pem_secret(),
@@ -438,9 +437,8 @@ impl Slug20Algorithm {
                 SchnorrSecretKey::label_for_standard_pem_secret(),
                 SPHINCSSecretKey::label_for_standard_pem_secret(),
                 BLSSecretKey::label_for_standard_pem_secret(),
-            ]
-        };
-        let signature_pem_labels = {
+            ];
+        let signature_pem_labels =
             vec![
                 ShulginSignature::label_for_standard_pem(),
                 AbsolveSignature::label_for_standard_pem(),
@@ -453,9 +451,8 @@ impl Slug20Algorithm {
                 MLDSA3Signature::label_for_standard_pem(),
                 SchnorrSignature::label_for_standard_pem(),
                 SPHINCSSignature::label_for_standard_pem(),
-            ]
-        };
-        vec![public_keys_pem_labels, secret_keys_pem_labels, signature_pem_labels]
+            ];
+        return vec![public_keys_pem_labels, secret_keys_pem_labels, signature_pem_labels]
     }
     pub fn enumerate_into_object() -> PemEncodingSuites {
         let x: Vec<Vec<String>> =Self::enumerate_pem_labels();

@@ -3239,6 +3239,69 @@ dependencies = [
 ]
 
 [[package]]
+name = "libslug"
+version = "0.13.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bb808230e7e5b43f953b5e5293a1ef481c04e3f3fa0fb9bb6c701dff25f26d72"
+dependencies = [
+ "aes-gcm",
+ "argon2",
+ "base32",
+ "base58",
+ "bincode",
+ "bip32",
+ "blake2",
+ "blake3",
+ "bls-signatures",
+ "chacha20poly1305 0.10.1",
+ "der 0.8.0",
+ "digest 0.11.3",
+ "dirs",
+ "ecdsa",
+ "ecies-ed25519-silene",
+ "ed25519-dalek",
+ "ed448 0.5.0",
+ "ed448-goldilocks",
+ "ed448-goldilocks-plus",
+ "fixedstr",
+ "hybrid-array 0.2.3",
+ "hybrid-array 0.3.1",
+ "hybrid-array 0.4.12",
+ "k256",
+ "leslie_lamport",
+ "log",
+ "ml-dsa 0.0.4",
+ "ml-dsa 0.1.0",
+ "ml-kem",
+ "pem",
+ "pqcrypto-falcon",
+ "pqcrypto-sphincsplus",
+ "pqcrypto-traits",
+ "protobuf",
+ "rand 0.10.1",
+ "rand 0.8.5",
+ "rand_core 0.10.1",
+ "rsa",
+ "schnorrkel",
+ "securerand-rs 0.4.0",
+ "serde",
+ "serde-big-array",
+ "serde-encrypt",
+ "serde_json",
+ "serde_yaml 0.9.34+deprecated",
+ "sha2 0.11.0",
+ "slh-dsa",
+ "slugencode",
+ "subtle",
+ "subtle-encoding",
+ "thiserror 2.0.19",
+ "tiny-bip39",
+ "tiny-keccak",
+ "winternitz-ots",
+ "zeroize",
+]
+
+[[package]]
 name = "libslug-zk-ext"
 version = "0.1.0"
 
@@ -3772,10 +3835,10 @@ dependencies = [
 
 [[package]]
 name = "openinternetcryptographykeys"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "fixedstr",
- "libslug 0.11.0",
+ "libslug 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
  "slugencode",
  "zeroize",
